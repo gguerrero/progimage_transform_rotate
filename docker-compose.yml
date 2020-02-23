@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  progimage_transform_rotate:
+    image: progimage_transform_rotate:latest
+    container_name: progimage_transform_rotate
+    env_file:
+      - docker/progimage_transform_rotate.dev.env
+    ports:
+      - 3002:3002
+
+networks:
+  default:
+    external:
+      name: local-environment
