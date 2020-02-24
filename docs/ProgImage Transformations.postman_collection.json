@@ -1,0 +1,45 @@
+{
+	"info": {
+		"_postman_id": "149d609d-d8c1-4636-b478-8f48972b29fa",
+		"name": "ProgImage Transformations",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Rotate",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:3002/api/v1/transform/rotate/d86aaee4-a195-4432-8793-cf9ad47c9505?degrees=-90",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3002",
+					"path": [
+						"api",
+						"v1",
+						"transform",
+						"rotate",
+						"d86aaee4-a195-4432-8793-cf9ad47c9505"
+					],
+					"query": [
+						{
+							"key": "degrees",
+							"value": "-90"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
