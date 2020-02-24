@@ -107,7 +107,9 @@ Scoping all under `/api/v1` in order to provide future api versioning, you'll fi
 ### GET /api/v1/transform/rotate/4a317f46-7ec0-4ec3-b4b3-9130c2c885e2
 
 **HEADERS**
-`Contet-Type: application/json`
+```
+Contet-Type: application/json
+```
 
 **Input Query Params**
 ```
@@ -185,9 +187,91 @@ Finished in 1.47 seconds (files took 2.29 seconds to load)
 ```
 
 ## About
-### Where is my DB?
+There are some topics about this project are are worth mention.
+
+### No DB :thinking_face:?
+Even though a definition of microservice normally comes with `own his data`, for
+this image transformation microservices we will not require to store data in disk.
+Therefore we don't need `ActiveRecord` or DB connection making the service even ligther.
+But is true that we will cache the image raw data for performance purposes...
+
 ### Adapters
+In order to allow future networking improvements, the project introduces the concept
+of adapters. These adapters in the service layer are referring to transport layers.
+At the moment, the preferred transport layer will be HTTP, but in mid-term future we
+may want to change the internal microservices transport layer for event-sourcing or
+gRPC. In this case, we should only create new adapters for the transport that accomplish
+the required interface in order to abstract other services that use them from change.
+After completing the implementation of the new adapter we should change classes using it like this:
+
+```ruby
+module Resources
+  class Images
+    @adapter = Resources::Adapters::MyNewCoolTransport.new
+    ...
+  end
+
+  class << self
+    attr_reader :adapter
+
+    def some_method
+      # This is part of the defined interface
+      adapter.download(image_uuid)
+    end
+  end
+end
+```
+
 ### Cache
-### Rails project templating
+A critical part of the application is caching the highly accessed resources.
+
+That's why in the project we use 2 layers of catching:
+- Image download cache: Once we request for the first time a `uuid` for an
+image, and the request is successfully returned, we'll cache the response in order to
+avoid future network request for a period of time. This is configurable and we have to
+keep always in mind, that of this image is modified by the storage server, we'll need to
+provide a cache invalidation mechanism (which currently is not required as the image is never modified).
+- Rotate image query: Image process is CPU and Memory consuming task! That's why is worthy
+to cache any transformation-rotation happening in the server for a short period of time, so in case the
+same rotate request (with same parameters `uuid` and `degrees`) is happening in the server, we already
+have the transformed image cached ready to return to the user. This cache improves highly the request performance!
+
+See this in action, first request will have to download the image from the storage server and transform it.
+When second request (with same params) is hitted, the performance improve is clear (from 400ms -> 14ms):
+
+```ruby
+Started GET "/api/v1/transform/rotate/d86aaee4-a195-4432-8793-cf9ad47c9505?degrees=-90" for ::1 at 2020-02-24 19:23:17 +0400
+Processing by Api::V1::TransformController#rotate as */*
+  Parameters: {"degrees"=>"-90", "id"=>"d86aaee4-a195-4432-8793-cf9ad47c9505", "transform"=>{}}
+Completed 200 OK in 402ms (Views: 9.4ms | Allocations: 537)
+
+
+Started GET "/api/v1/transform/rotate/d86aaee4-a195-4432-8793-cf9ad47c9505?degrees=-90" for ::1 at 2020-02-24 19:23:30 +0400
+Processing by Api::V1::TransformController#rotate as */*
+  Parameters: {"degrees"=>"-90", "id"=>"d86aaee4-a195-4432-8793-cf9ad47c9505", "transform"=>{}}
+Completed 200 OK in 14ms (Views: 10.4ms | Allocations: 253)
+```
+
+Caching is tricky, we need always to take care of invalidation and resource usage (memory in the server),
+but they are an amazing ally when high performance is required!
+
+### Rails Template
+This microservice is going to be one of many of a kind. Maybe we will create other
+microservices that will just filter or convert the image.
+
+That's why once we found this first microservice as stable, is highly recommended
+using a [rails template](https://guides.rubyonrails.org/rails_application_templates.html)
+containing many of the services, controller and even rspec files that this project has
+by just accepting an input which will be the new kind of `transformation` that the microservice
+will accomplish, helping the team to create in a super fashion and faster way as many
+services as image transformation are required.
+
 ### Image Data Pipeline
-### Background Jobs
+Is a good idea to think in any of this image trasnformation microservices as data Pipeline.
+Because we may want to apply many different fiters and transformation to the final image,
+but they might be implemented in different microservices, any of these might accept not only a
+UUID as input param (for retrieving the image from the Store) but also a raw base64 by string,
+so we can just simply process it as the input image and return another base64 byte string as
+and output to the user.
+
+*Something to thing about in short-term.*
