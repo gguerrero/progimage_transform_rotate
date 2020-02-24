@@ -21,6 +21,7 @@ gem 'bootsnap', '>= 1.4.2', require: false
 
 gem 'fast_jsonapi'
 gem 'httparty'
+gem 'mini_magick'
 gem 'uuid', '~> 2.3.0'
 
 group :development, :test do

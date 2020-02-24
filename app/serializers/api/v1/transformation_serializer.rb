@@ -1,21 +1,21 @@
 module Api::V1
-  class TranformationSerializer
-    include FastJsonapi::ObjectSerializer
+  class TransformationSerializer
+    attr_reader :variant_blob, :image_type, :image_filename
 
-    set_key_transform :camel_lower
-
-    attributes :name, :description
-
-    attribute :content_type do |object|
-      "image/png"
+    def initialize(variant_blob, image_type, image_filename)
+      @variant_blob     = variant_blob
+      @image_type       = image_type
+      @image_filename   = image_filename
     end
 
-    attribute :image_filename do |object|
-      "image_filename.png"
-    end
-
-    attribute :image_data do |object|
-      Base64.encode64(object.data)
+    def as_json(_opts = {})
+      {
+        data: {
+          contentType: image_type,
+          imageFilename: image_filename,
+          imageData: Base64.encode64(variant_blob)
+        }
+      }
     end
   end
 end
