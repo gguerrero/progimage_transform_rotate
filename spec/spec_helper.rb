@@ -107,13 +107,44 @@ def generate_data64_uri(file:, content_type: )
   "data:#{content_type};base64,#{Base64.encode64(file.read)}"
 end
 
-def stubbed_image_request(url:, file:)
-  stub_request(:get, url).
-  with(
+def given_stubbed_resource_image_request(url:, file:)
+  resp_body = {
+    'data' => {
+      'id' => UUID.generate,
+      'type' => 'resource',
+      'attributes' => {
+        'name' => 'A name',
+        'description' => 'A description',
+        'contentType' => 'image/png',
+        'imageFilename' => 'ruby.png',
+        'imageData' => Base64.encode64(file.read)
+      },
+      'links' => {
+        'imageUrl' => 'http://example.org/image'
+      }
+    }
+  }
+
+  stub_request(:get, url).with(
     headers: {
-   'Accept'=>'*/*',
-   'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
-   'User-Agent'=>'Ruby'
-    }).
-  to_return(status: 200, body: file.read, headers: {})
+      'Content-Type' => 'application/json'
+    }
+  ).to_return(status: 200, body: JSON.unparse(resp_body), headers: {})
+end
+
+def given_stubbed_resource_image_as_not_found(url:)
+  not_found_resp_body = { message: 'Not Found' }
+
+  stub_request(:get, url).with(
+    headers: {
+      'Content-Type' => 'application/json'
+    }
+  ).to_return(
+    status: :not_found,
+    body: JSON.unparse(not_found_resp_body), headers: {}
+  )
+end
+
+def given_stubbed_request_to_conn_refused(url:)
+  stub_request(:any, url).to_raise(Errno::ECONNREFUSED)
 end
