@@ -5,7 +5,7 @@ only endpoint for transform images by rotating them, it will look for the best
 performance for the user by catching the image retrieval and the rotation query
 (so further requests will became fasters and avoid overloading in the network).
 This service will not have ActiveRecord nor DB connection keeping it as a reduced data isolated microservice which only concern about processing input images to
-return an output tranformed one.
+return an output transformed one.
 
 ## UpAndRunning
 First run bundle to download all the dependencies for the project:
@@ -237,7 +237,7 @@ same rotate request (with same parameters `uuid` and `degrees`) is happening in 
 have the transformed image cached ready to return to the user. This cache improves highly the request performance!
 
 See this in action, first request will have to download the image from the storage server and transform it.
-When second request (with same params) is hitted, the performance improve is clear (from 400ms -> 14ms):
+When second request (with same params) is hit, the performance improve is clear (from 400ms -> 14ms):
 
 ```ruby
 Started GET "/api/v1/transform/rotate/d86aaee4-a195-4432-8793-cf9ad47c9505?degrees=-90" for ::1 at 2020-02-24 19:23:17 +0400
