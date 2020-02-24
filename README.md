@@ -189,7 +189,7 @@ Finished in 1.47 seconds (files took 2.29 seconds to load)
 ## About
 There are some topics about this project are are worth mention.
 
-### No DB :thinking_face:?
+### No DB 🤔?
 Even though a definition of microservice normally comes with `own his data`, for
 this image transformation microservices we will not require to store data in disk.
 Therefore we don't need `ActiveRecord` or DB connection making the service even ligther.
