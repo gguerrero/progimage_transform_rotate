@@ -7,7 +7,7 @@ WORKDIR /progimage_transform_rotate
 
 COPY Gemfile /progimage_transform_rotate/Gemfile
 COPY Gemfile.lock /progimage_transform_rotate/Gemfile.lock
-RUN bundle install --binstubs
+RUN bundle install
 COPY . /progimage_transform_rotate
 
 # Add a script to be executed every time the container starts.

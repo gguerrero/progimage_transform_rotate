@@ -87,6 +87,6 @@ Rails.application.configure do
   # config.active_record.database_resolver_context = ActiveRecord::Middleware::DatabaseSelector::Resolver::Session
 
   config.services = {
-    resources_uri: Env.fetch!('SERVICES_RESOURCES_URL')
+    resources_uri: ENV.fetch('SERVICES_RESOURCES_URL')
   }
 end
