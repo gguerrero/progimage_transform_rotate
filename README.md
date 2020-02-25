@@ -255,6 +255,11 @@ Completed 200 OK in 14ms (Views: 10.4ms | Allocations: 253)
 Caching is tricky, we need always to take care of invalidation and resource usage (memory in the server),
 but they are an amazing ally when high performance is required!
 
+#### Redis Store
+A good practice and approach for the cache is also using a server like **Redis**.
+Having a Redis server will allow to share the memory between the same nodes of a service
+as well as between different microservices if required.
+
 ### Rails Template
 This microservice is going to be one of many of a kind. Maybe we will create other
 microservices that will just filter or convert the image.
